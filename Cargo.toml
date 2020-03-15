@@ -1,5 +1,5 @@
 [package]
-name = "juniper_base"
+name = "juniper_kv_todos"
 version = "0.1.0"
 authors = ["danb@structionsite.com"]
 edition = "2018"
