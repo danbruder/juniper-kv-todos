@@ -15,6 +15,7 @@ extern crate juniper;
 extern crate juniper_codegen;
 extern crate validator_derive;
 
+mod db;
 mod error;
 mod graphql;
 mod schema;

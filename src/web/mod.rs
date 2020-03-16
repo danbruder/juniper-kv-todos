@@ -3,11 +3,10 @@
 //
 pub mod cors;
 
-use crate::graphql::{Ctx, Mutation, Query, Schema};
-use rocket::http::Status;
-use rocket::request::{self, FromRequest, Request};
+use crate::db;
+use crate::graphql::{Mutation, Query, Schema};
+use kv::Store;
 use rocket::response::content;
-use rocket::Outcome;
 use rocket::State;
 
 #[get("/graphql/explorer")]
@@ -24,15 +23,19 @@ fn post_graphql_cors_handler() -> content::Plain<String> {
 fn post_graphql_handler(
     request: juniper_rocket::GraphQLRequest,
     schema: State<Schema>,
+    store: State<Store>,
 ) -> juniper_rocket::GraphQLResponse {
     // Create new context
-    let context = Ctx {};
 
-    request.execute(&schema, &context)
+    request.execute(&schema, store.inner())
 }
 
 pub fn launch() {
+    let cfg = db::config();
+    let store = Store::new(cfg).expect("Could not create store");
+
     rocket::ignite()
+        .manage(store)
         .manage(Schema::new(Query, Mutation))
         .mount(
             "/",
